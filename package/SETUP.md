@@ -4,42 +4,43 @@ Welcome to **DailyLogger**! This guide walks you through installing, customizing
 
 ---
 
-## ⚡ Quick Start: 3-Step Installation
+## ⚡ Quick Start: Zero-Friction Setup
 
 You do **not** need administrator rights, Python, or developer tools installed on your PC.
 
-### Step 1: Download & Extract
-1. Download `DailyLogger-Windows-x64.zip`.
-2. Right-click the downloaded `.zip` file and select **Extract All...**.
-3. Choose an extraction folder (for example, your `Downloads` or `Documents` folder) and click **Extract**.
+### Method A: Graphical Setup (One-Click)
+1. Download and extract `DailyLogger-Windows-x64.zip`.
+2. Double-click **`DailyLogger.exe`** (or `install.cmd`).
+3. The sleek Mac-identical reflection prompt opens.
+4. Click the **⚙ Settings** button in the header, choose your preferred daily reflection time, and click **Save & Schedule**.
 
-### Step 2: Run the Installer
-1. Open the extracted folder.
-2. Double-click **`install.cmd`**.
+### Method B: Command-Line One-Step Schedule
+From Command Prompt or PowerShell:
+```cmd
+DailyLogger.exe --setup 21 30
+```
+*(This directly schedules the task for 9:30 PM and creates the Start Menu shortcut — no `.cmd` scripts needed!)*
 
-> **Note on Windows Defender / SmartScreen:**
-> Because this is a newly downloaded setup script, Windows might display a blue banner saying *"Windows protected your PC"*.
-> - Click **More info**.
-> - Click **Run anyway**.
+---
 
-### Step 3: Complete & Verify
-The installer runs in a terminal window and automatically:
-- Copies application files to `%LOCALAPPDATA%\Programs\DailyLogger`.
-- Configures reflection storage at `%LOCALAPPDATA%\DailyLogger\daily_logs.txt`.
-- Registers a Windows Task Scheduler task (daily prompt at `02:00` AM, plus wake/logon catch-up).
-- Adds a **DailyLogger** shortcut to your Start Menu.
+## 🎨 Visual Experience: Identical to Mac
 
-When you see `[SUCCESS] DailyLogger installation completed successfully!`, press any key to close the window.
+DailyLogger on Windows matches the original macOS version 1:1:
+- **540 × 380 Floating HUD**: Dark glassmorphism card with 14px rounded corners and soft drop shadow.
+- **Header**: Indigo-to-purple gradient pencil icon, "Daily Reflection" title, and logical date subtitle.
+- **Prompt Mode**: Clean multiline editor with watermark guidance.
+- **History Mode**: Click the **"History"** button in the header to browse past reflection cards with timestamps.
+- **Keyboard Navigation**: Press **`Ctrl + Enter`** to save, or **`Esc`** to dismiss.
 
 ---
 
 ## 🚀 How to Use DailyLogger
 
 ### 1. Automatic Daily Prompt
-At your scheduled reflection time (default `02:00` AM):
-- A clean, distraction-free prompt appears on your desktop asking *"What did you do today?"*.
+At your scheduled reflection time:
+- The floating HUD prompt appears on your desktop asking *"What did you do today?"*.
 - Type your reflection.
-- Press **`Ctrl + Enter`** to save, or **`Esc`** to dismiss without saving.
+- Press **`Ctrl + Enter`** to save.
 
 ### 2. Missed Schedule / Sleep Catch-Up
 If your computer was asleep or turned off at your scheduled time:
@@ -48,15 +49,16 @@ If your computer was asleep or turned off at your scheduled time:
 ### 3. Open on Demand
 You can open DailyLogger anytime:
 - Press the **Windows Key**, type `DailyLogger`, and hit **Enter**.
-- Or double-click **`run-now.cmd`** in your installation folder.
+- Or run **`DailyLogger.exe`** directly.
 
 ---
 
 ## ⚙️ Customizing Your Scheduled Time
 
-By default, DailyLogger prompts at **2:00 AM** (`02:00`). To change the time:
-
-1. Press `Win + R`, paste the following path, and press Enter:
+You can customize your scheduled prompt time in two ways:
+1. **In-App GUI**: Click the **⚙** gear icon in the header, adjust the hour and minute, and click **Save & Schedule**.
+2. **From Terminal**: Run `DailyLogger.exe --setup <hour> <minute>` (e.g. `DailyLogger.exe --setup 22 00`).
+3. **Manual Config**: Or edit `%LOCALAPPDATA%\DailyLogger\config.json`:
    ```text
    %LOCALAPPDATA%\DailyLogger\config.json
    ```

@@ -1,0 +1,308 @@
+<Window x:Class="DailyLogger.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:DailyLogger.App.ViewModels"
+        mc:Ignorable="d"
+        Title="DailyLogger"
+        Width="540" Height="380"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        Topmost="True"
+        ResizeMode="NoResize"
+        ShowInTaskbar="True"
+        FocusManager.FocusedElement="{Binding ElementName=PromptTextBox}">
+
+    <Window.Resources>
+        <!-- Boolean to Visibility Converter -->
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <!-- Custom Button Style -->
+        <Style x:Key="MacButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#2C2C2E"/>
+            <Setter Property="Foreground" Value="#F2F2F7"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#3A3A3C"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#3A3A3C"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#48484A"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Prominent Indigo Button Style -->
+        <Style x:Key="IndigoButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#4F46E5"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#4338CA"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#3730A3"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <!-- Outer Card with 14px Rounded Corners & Soft Drop Shadow -->
+    <Border CornerRadius="14"
+            Background="#1C1C1E"
+            BorderBrush="#38383A"
+            BorderThickness="1"
+            Margin="10">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" BlurRadius="20" ShadowDepth="4" Opacity="0.5"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/> <!-- Header -->
+                <RowDefinition Height="1"/>    <!-- Divider -->
+                <RowDefinition Height="*"/>    <!-- Content -->
+                <RowDefinition Height="1"/>    <!-- Divider -->
+                <RowDefinition Height="Auto"/> <!-- Footer -->
+            </Grid.RowDefinitions>
+
+            <!-- 1. Header (Draggable) -->
+            <Grid Grid.Row="0" Margin="20,18,20,14" MouseLeftButtonDown="Header_MouseLeftButtonDown">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 44x44 Indigo-to-Purple Gradient Icon -->
+                <Border Grid.Column="0" Width="44" Height="44" CornerRadius="10">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#4F46E5" Offset="0.0"/>
+                            <GradientStop Color="#7C3AED" Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <!-- Pencil Glyph -->
+                    <Path Data="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                          Fill="White"
+                          Stretch="Uniform"
+                          Width="18" Height="18"
+                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+
+                <!-- Title & Subtitle -->
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="14,0,0,0">
+                    <TextBlock Text="Daily Reflection"
+                               FontSize="17"
+                               FontWeight="Bold"
+                               Foreground="#FFFFFF"/>
+                    <TextBlock Text="{Binding TargetDateString, StringFormat='What did you do today? • {0}'}"
+                               FontSize="12"
+                               Foreground="#8E8E93"
+                               Margin="0,2,0,0"/>
+                </StackPanel>
+
+                <!-- Actions: Settings & History/Prompt Toggle -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Command="{Binding ToggleSettingsCommand}"
+                            ToolTip="Schedule Settings"
+                            Style="{StaticResource MacButtonStyle}"
+                            Margin="0,0,8,0"
+                            Padding="8,6">
+                        <TextBlock Text="⚙" FontSize="13" Foreground="#AEAEB2"/>
+                    </Button>
+                    <Button Command="{Binding ToggleModeCommand}"
+                            Content="{Binding ModeToggleText}"
+                            Style="{StaticResource MacButtonStyle}"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Top Divider -->
+            <Rectangle Grid.Row="1" Fill="#2C2C2E"/>
+
+            <!-- 2. Content Area -->
+            <Grid Grid.Row="2" Margin="20,14">
+                <!-- Mode A: Text Editor (When not in History Mode) -->
+                <Grid Visibility="{Binding IsHistoryMode, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}">
+                    <Border CornerRadius="10"
+                            Background="#252527"
+                            BorderBrush="#38383A"
+                            BorderThickness="1">
+                        <Grid Margin="12">
+                            <TextBox x:Name="PromptTextBox"
+                                     Text="{Binding EntryText, UpdateSourceTrigger=PropertyChanged}"
+                                     AcceptsReturn="True"
+                                     TextWrapping="Wrap"
+                                     Background="Transparent"
+                                     Foreground="#F2F2F7"
+                                     BorderThickness="0"
+                                     FontSize="14"
+                                     LineHeight="20"
+                                     VerticalScrollBarVisibility="Auto"
+                                     CaretBrush="#818CF8"
+                                     KeyDown="PromptTextBox_KeyDown"/>
+
+                            <!-- Watermark Placeholder -->
+                            <TextBlock Text="Write your accomplishments, key moments, learnings, or thoughts...&#x0a;(Press Ctrl + Enter to save)"
+                                       FontSize="14"
+                                       Foreground="#636366"
+                                       IsHitTestVisible="False"
+                                       Margin="3,2,0,0"
+                                       Visibility="{Binding ShowPlaceholder, Converter={StaticResource BoolToVis}}"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Mode B: History List View -->
+                <Grid Visibility="{Binding IsHistoryMode, Converter={StaticResource BoolToVis}}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding RecentLogs}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#252527"
+                                            BorderBrush="#38383A"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Padding="12,10"
+                                            Margin="0,0,0,8">
+                                        <StackPanel>
+                                            <DockPanel LastChildFill="False" Margin="0,0,0,4">
+                                                <TextBlock Text="{Binding Date}"
+                                                           FontWeight="Bold"
+                                                           FontSize="12"
+                                                           Foreground="#818CF8"
+                                                           DockPanel.Dock="Left"/>
+                                                <TextBlock Text="{Binding Timestamp}"
+                                                           FontSize="11"
+                                                           Foreground="#8E8E93"
+                                                           DockPanel.Dock="Right"/>
+                                            </DockPanel>
+                                            <TextBlock Text="{Binding Entry}"
+                                                       FontSize="13"
+                                                       Foreground="#F2F2F7"
+                                                       TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+
+                <!-- Overlay Modal: In-App Schedule Settings -->
+                <Border Background="#1C1C1EE6"
+                        CornerRadius="10"
+                        Visibility="{Binding IsSettingsOpen, Converter={StaticResource BoolToVis}}"
+                        Panel.ZIndex="10">
+                    <Border Background="#252527"
+                            BorderBrush="#48484A"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="20"
+                            Width="320"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                        <StackPanel>
+                            <TextBlock Text="Schedule Settings" FontWeight="Bold" FontSize="15" Foreground="White" Margin="0,0,0,12"/>
+                            <TextBlock Text="Set daily reflection prompt time:" FontSize="12" Foreground="#8E8E93" Margin="0,0,0,8"/>
+                            
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                <TextBlock Text="Hour (0-23):" VerticalAlignment="Center" Foreground="#AEAEB2" Margin="0,0,8,0"/>
+                                <TextBox Text="{Binding ScheduleHour, UpdateSourceTrigger=PropertyChanged}" Width="50" Margin="0,0,16,0" Padding="4" Background="#1C1C1E" Foreground="White" BorderBrush="#38383A"/>
+                                <TextBlock Text="Min (0-59):" VerticalAlignment="Center" Foreground="#AEAEB2" Margin="0,0,8,0"/>
+                                <TextBox Text="{Binding ScheduleMinute, UpdateSourceTrigger=PropertyChanged}" Width="50" Padding="4" Background="#1C1C1E" Foreground="White" BorderBrush="#38383A"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="Cancel" Command="{Binding ToggleSettingsCommand}" Style="{StaticResource MacButtonStyle}" Margin="0,0,8,0"/>
+                                <Button Content="Save &amp; Schedule" Command="{Binding SaveSettingsCommand}" Style="{StaticResource IndigoButtonStyle}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Border>
+            </Grid>
+
+            <!-- Bottom Divider -->
+            <Rectangle Grid.Row="3" Fill="#2C2C2E"/>
+
+            <!-- 3. Footer -->
+            <Grid Grid.Row="4" Margin="20,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Dismiss Button (Esc) -->
+                <Button Grid.Column="0"
+                        Content="Dismiss"
+                        Command="{Binding DismissCommand}"
+                        Style="{StaticResource MacButtonStyle}"
+                        Width="75"/>
+
+                <!-- Error Display -->
+                <TextBlock Grid.Column="1"
+                           Text="{Binding ErrorMessage}"
+                           Foreground="#EF4444"
+                           FontSize="11"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"
+                           Margin="0,0,12,0"
+                           TextTrimming="CharacterEllipsis"/>
+
+                <!-- Save Log Button (Ctrl + Enter) -->
+                <Button Grid.Column="2"
+                        Command="{Binding SaveCommand}"
+                        IsEnabled="{Binding CanSubmit}"
+                        Style="{StaticResource IndigoButtonStyle}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="✓" FontWeight="Bold" Margin="0,0,6,0" Visibility="{Binding IsSubmitting, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}"/>
+                        <TextBlock Text="{Binding IsSubmitting, Converter={StaticResource BoolToVis}}" Text="Saving..." Visibility="{Binding IsSubmitting, Converter={StaticResource BoolToVis}}"/>
+                        <TextBlock Text="Save Log" Visibility="{Binding IsSubmitting, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}"/>
+                        <TextBlock Text="Ctrl+↵" Opacity="0.6" FontSize="11" Margin="8,1,0,0"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

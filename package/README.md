@@ -6,25 +6,25 @@ A distraction-free daily reflection prompt for Windows with zero-configuration s
 
 ## Features
 
-- **Distraction-Free Prompt**: Displays a floating prompt at your scheduled daily reflection time.
+- **1:1 Mac Visual Parity**: Dark HUD glassmorphism window (540x380 px, 14px rounded corners), gradient icon, multiline editor, and built-in History viewer identical to the macOS Swift version.
+- **Direct Task Scheduling**: Manage and schedule Windows Task Scheduler tasks directly from the executable (`DailyLogger.exe --setup`) or in-app Settings dialog without relying on multiple separate `.cmd` scripts.
 - **Night-Owl Date Attribution**: Entries created between `00:00` and `04:59` belong to the previous logical day.
-- **One-Click Installation**: Zero-dependency installation via a double-clickable batch runner. No administrator privileges or developer runtimes required.
 - **Automatic Scheduling**: Windows Task Scheduler integration with daily trigger and missed-run catch-up (prompts upon logon/wake if your computer was asleep at the scheduled time).
 - **Local-First & Private**: Reflection entries are stored locally as human-readable JSON Lines (JSONL) in `%LOCALAPPDATA%\DailyLogger\daily_logs.txt`. No cloud, no analytics, no open network ports.
 - **Preserved History**: Uninstallation cleanly removes scheduled tasks and application files while preserving your reflection history by default.
 
 ---
 
-## Quick Start: One-Click Installation
+## Quick Start: Single-Executable Setup
 
-1. Download and extract the `DailyLogger-Windows-x64.zip` release package.
-2. Double-click **`install.cmd`**.
+1. Download and extract `DailyLogger-Windows-x64.zip`.
+2. Double-click **`DailyLogger.exe`** (or `install.cmd`).
+3. Click the **⚙ Settings** button in the header to pick your preferred prompt time and schedule automatically!
 
-That's it! The installer will:
-- Copy the application and bundled runtimes to `%LOCALAPPDATA%\Programs\DailyLogger`.
-- Initialize your data and log directories at `%LOCALAPPDATA%\DailyLogger`.
-- Register the `DailyLogger` scheduled task (defaults to 02:00 daily, plus logon catch-up).
-- Add a "DailyLogger" shortcut to your Start Menu.
+Alternatively, schedule via command line directly:
+```cmd
+DailyLogger.exe --setup 22 00
+```
 
 ---
 

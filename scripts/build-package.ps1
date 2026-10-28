@@ -85,27 +85,29 @@ if (-not $SkipPythonDownload) {
     Write-Host "[2/5] Skipping embedded Python download as requested." -ForegroundColor Yellow
 }
 
-# 4. Stage .NET WPF Application
+# 4. Stage .NET WPF Application (Unified Single-File Executable)
 if (-not $SkipDotNetBuild) {
-    Write-Host "[3/5] Publishing self-contained .NET application..." -ForegroundColor Green
+    Write-Host "[3/5] Publishing self-contained single-file DailyLogger.exe..." -ForegroundColor Green
     if (Test-Path $DotNetProjectPath) {
         dotnet publish $DotNetProjectPath `
             -c Release `
             -r win-x64 `
             --self-contained true `
             -p:PublishSingleFile=true `
-            -o $binDir
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -o $OutputDir
         if ($LASTEXITCODE -ne 0) {
             throw ".NET publish failed with exit code $LASTEXITCODE"
         }
+        # Also copy into bin for legacy structure if needed
+        Copy-Item -Path "$OutputDir\DailyLogger.App.exe" -Destination "$binDir\DailyLogger.exe" -Force -ErrorAction SilentlyContinue
     } else {
         Write-Host "WPF project not found at $DotNetProjectPath. Creating standalone launcher wrapper..." -ForegroundColor Yellow
-        # Create lightweight standalone launcher script/executable wrapper
-        $launcherBat = Join-Path $binDir "DailyLogger.App.cmd"
+        $launcherBat = Join-Path $OutputDir "DailyLogger.cmd"
         $launcherContent = @"
 @echo off
 setlocal
-set "APP_DIR=%~dp0.."
+set "APP_DIR=%~dp0"
 set "PYTHON_EXE=%APP_DIR%\runtime\python\python.exe"
 if not exist "%PYTHON_EXE%" set "PYTHON_EXE=python"
 "%PYTHON_EXE%" "%APP_DIR%\backend\logger.py" %*
