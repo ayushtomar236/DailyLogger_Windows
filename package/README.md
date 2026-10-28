@@ -41,6 +41,41 @@ The root folder and installed application directory include convenient double-cl
 
 ---
 
+## Manually Invoking DailyLogger on Windows
+
+You can trigger or test DailyLogger anytime using any of the following methods:
+
+### 1. Double-Click `run-now.cmd` (Easiest)
+In your extracted folder or `%LOCALAPPDATA%\Programs\DailyLogger`:
+* Double-click **`run-now.cmd`** to immediately open the prompt or record an entry.
+
+### 2. From the Windows Start Menu
+* Press the **Windows Key**, type **`DailyLogger`**, and press **Enter**.
+
+### 3. Trigger the Scheduled Task Directly
+To test the exact background trigger registered with Windows Task Scheduler:
+* **In PowerShell**:
+  ```powershell
+  Start-ScheduledTask -TaskName "DailyLogger"
+  ```
+* **In Command Prompt (`cmd.exe`)**:
+  ```cmd
+  schtasks /Run /TN "DailyLogger"
+  ```
+* **Task Scheduler GUI**: Press `Win + R`, type `taskschd.msc`, locate `DailyLogger`, right-click and choose **Run**.
+
+### 4. Direct Terminal Commands
+```powershell
+# Check if logged today (exit code 0 = logged, 1 = not yet)
+python "%LOCALAPPDATA%\Programs\DailyLogger\backend\logger.py" has-logged
+
+# Record an entry
+python "%LOCALAPPDATA%\Programs\DailyLogger\backend\logger.py" log --text "Finished my milestone"
+
+# View recent entries
+python "%LOCALAPPDATA%\Programs\DailyLogger\backend\logger.py" list --limit 5 --pretty
+```
+
 ## Where Data is Stored
 
 - **Reflections Log**: `%LOCALAPPDATA%\DailyLogger\daily_logs.txt` (UTF-8 JSON Lines)
